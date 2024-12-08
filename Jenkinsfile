@@ -4,7 +4,7 @@ pipeline {
         stage("Clone Code") {
             steps {
                 git url: 'https://github.com/Devopsarun1234/node-todo-cicd.git', branch: 'master'
-                echo "Pipeline triggered at: $(date)"
+                sh 'echo "Pipeline triggered at: $(date)"'
             }
         }
         stage("Build and Test Code") {
@@ -36,8 +36,6 @@ pipeline {
         }
     }
 }
-
-
 
 
 
