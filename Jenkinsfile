@@ -1,35 +1,48 @@
-pipeline{
-    agent { label 'dev-server' }
-    
-    stages{
-        stage("Code Clone"){
-            steps{
-                echo "Code Clone Stage"
-                git url: "https://github.com/LondheShubham153/node-todo-cicd.git", branch: "master"
+pipeline {
+    agent { label 'arun-bubu' }
+    stages {
+        stage("Clone Code") {
+            steps {
+                git url: 'https://github.com/Devopsarun1234/node-todo-cicd.git', branch: 'master'
             }
         }
-        stage("Code Build & Test"){
-            steps{
-                echo "Code Build Stage"
-                sh "docker build -t node-app ."
+        stage("Build and Test Code") {
+            steps {
+                sh 'docker build -t node-app .'
             }
         }
-        stage("Push To DockerHub"){
-            steps{
+        stage("Push to Docker Hub") {
+            steps {
                 withCredentials([usernamePassword(
-                    credentialsId:"dockerHubCreds",
-                    usernameVariable:"dockerHubUser", 
-                    passwordVariable:"dockerHubPass")]){
-                sh 'echo $dockerHubPass | docker login -u $dockerHubUser --password-stdin'
-                sh "docker image tag node-app:latest ${env.dockerHubUser}/node-app:latest"
-                sh "docker push ${env.dockerHubUser}/node-app:latest"
+                        credentialsId: 'Dockerhubcreds', 
+                        usernameVariable: 'dockerhubuser', 
+                        passwordVariable: 'dockerhubpass')]) {   
+                    sh '''
+                        docker login -u ${dockerhubuser} -p ${dockerhubpass}
+                        docker tag node-app:latest ${dockerhubuser}/node-app:latest
+                        docker push ${dockerhubuser}/node-app:latest
+                    '''
                 }
             }
         }
-        stage("Deploy"){
-            steps{
-                sh "docker compose down && docker compose up -d --build"
+        stage("Deploy") {
+            steps {
+                sh '''
+                    docker-compose down
+                    docker-compose up -d --build
+                '''
             }
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
